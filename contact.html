@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <title>تماس با ما | Contact</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <h1>تماس با ما | Contact Us</h1>
+    <nav>
+      <a href="index.html">خانه | Home</a>
+      <a href="about.html">درباره ما | About</a>
+      <a href="contact.html">تماس با ما | Contact</a>
+    </nav>
+  </header>
+
+  <main>
+    <section>
+      <form id="contactForm">
+        <label>نام | Name:</label>
+        <input type="text" id="name" required>
+
+        <label>ایمیل | Email:</label>
+        <input type="email" id="email" required>
+
+        <label>پیام | Message:</label>
+        <textarea id="message" required></textarea>
+
+        <button type="submit">ارسال | Send</button>
+      </form>
+      <p id="status"></p>
+    </section>
+  </main>
+
+  <footer>
+    <p>© 2025 حسام | Hesam</p>
+  </footer>
+
+  <script>
+    const botToken = "7914620701:AAFadw5IwnYVVRiYqVQ-aygX-hRxXep7N0Q";
+    const chatId = "6152941822";
+
+    document.getElementById("contactForm").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const name = document.getElementById("name").value;
+      const email = document.getElementById("email").value;
+      const message = document.getElementById("message").value;
+
+      const text = پیام جدید از فرم تماس:
+نام: ${name}
+ایمیل: ${email}
+پیام: ${message};
+
+      fetch(https://api.telegram.org/bot${botToken}/sendMessage, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: text
+        })
+      })
+      .then(res => {
+        if (res.ok) {
+          document.getElementById("status").innerText = "پیام با موفقیت ارسال شد!";
+          document.getElementById("contactForm").reset();
+        } else {
+          document.getElementById("status").innerText = "خطا در ارسال پیام.";
+        }
+      })
+      .catch(err => {
+        document.getElementById("status").innerText = "مشکلی پیش اومد!";
+      });
+    });
+  </script>
+</body>
+</html>
