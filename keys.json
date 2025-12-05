@@ -1,7 +1,10 @@
 {
-  "keys": [
-    "KEY-12345",
-    "KEY-ABCDE",
-    "KEY-TEST"
-  ]
+  "keys": {
+    "TEST-KEY-123": {
+      "expires": "2026-12-31",
+      "max_devices": 2,
+      "devices": [],
+      "status": "active"
+    }
+  }
 }

@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>License Panel - Login</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="login-card">
+  <h1>License Panel</h1>
+  <label>Username</label>
+  <input id="username" placeholder="username" />
+  <label>Password</label>
+  <input id="password" type="password" placeholder="password" />
+  <button id="loginBtn">Login</button>
+  <p id="msg" class="muted"></p>
+</div>
+<script src="app.js"></script>
+<script>
+document.getElementById('loginBtn').addEventListener('click', function(){
+  app.login();
+});
+</script>
+</body>
+</html>
