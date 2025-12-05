@@ -8,3 +8,13 @@
     }
   }
 }
+{
+  "keys": {
+    "TEST-KEY-1234": {
+      "expires": "2024-9-3",
+      "max_devices": 2,
+      "devices": [],
+      "status": "active"
+    }
+  }
+}
