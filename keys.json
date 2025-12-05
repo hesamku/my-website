@@ -1,7 +1,7 @@
 {
   "keys": {
     "TEST-KEY-123": {
-      "expires": "2026-12-31",
+      "expires": "2024-12-31",
       "max_devices": 2,
       "devices": [],
       "status": "active"
