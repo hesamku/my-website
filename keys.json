@@ -18,3 +18,14 @@
     }
   }
 }
+{
+  "keys": {
+    "HESAM-KU-TEST-KEY-5427": {
+      "expires": "2024-9-3",
+      "max_devices": 2,
+      "devices": [],
+      "status": "active"
+    }
+  }
+}
+
