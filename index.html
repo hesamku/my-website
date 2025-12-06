@@ -1,26 +1,27 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html>
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>License Panel - Login</title>
-<link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>HESAM-KU License Generator</title>
+<style>
+body { font-family: Arial; padding:20px; background:#111; color:#fff; }
+input, button { padding:8px; font-size:16px; }
+pre { background:#222; padding:15px; margin-top:20px; color:#0f0; }
+label { font-size:18px; }
+</style>
 </head>
 <body>
-<div class="login-card">
-  <h1>License Panel</h1>
-  <label>Username</label>
-  <input id="username" placeholder="username" />
-  <label>Password</label>
-  <input id="password" type="password" placeholder="password" />
-  <button id="loginBtn">Login</button>
-  <p id="msg" class="muted"></p>
-</div>
+
+<h2>HESAM-KU License Generator</h2>
+
+<label>Number of Days:</label>
+<input id="days" type="number" value="30" min="1"><br><br>
+
+<button onclick="generate()">Create License</button>
+
+<pre id="out"></pre>
+
 <script src="app.js"></script>
-<script>
-document.getElementById('loginBtn').addEventListener('click', function(){
-  app.login();
-});
-</script>
+
 </body>
 </html>
