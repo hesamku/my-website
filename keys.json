@@ -6,7 +6,9 @@
     },
     "HESAM-KU-VIP-XYZ00000000": {
       "expires": "2024-05-10",
-      "status": "disabled"
+      "status": "active"
     }
   }
 }
+
+disabled
