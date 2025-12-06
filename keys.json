@@ -1,31 +1,12 @@
-{
+  {
   "keys": {
     "TEST-KEY-123": {
-      "expires": "2026-9-3",
-      "max_devices": 2,
-      "devices": [],
+      "expires": "2026-12-31",
       "status": "active"
+    },
+    "HESAM-KU-VIP-XYZ00000000": {
+      "expires": "2025-05-10",
+      "status": "disabled"
     }
   }
 }
-{
-  "keys": {
-    "TEST-KEY-1234": {
-      "expires": "2024-9-3",
-      "max_devices": 2,
-      "devices": [],
-      "status": "active"
-    }
-  }
-}
-{
-  "keys": {
-    "HESAM-KU-TEST-KEY-5427": {
-      "expires": "2026-6-14",
-      "max_devices": 2,
-      "devices": [],
-      "status": "active"
-    }
-  }
-}
-
