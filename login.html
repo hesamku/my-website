@@ -1,0 +1,27 @@
+
+<!doctype html>
+<html lang="fa" dir="rtl">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ورود - پنل لایسنس</title>
+    <link rel="stylesheet" href="/static/style.css">
+  </head>
+  <body>
+    <div class="center-card">
+      <h1>ورود به پنل</h1>
+      {% with messages = get_flashed_messages() %}
+        {% if messages %}
+          <div class="flash">{{ messages[0] }}</div>
+        {% endif %}
+      {% endwith %}
+      <form method="post">
+        <label>نام کاربری</label>
+        <input name="username" value="1234" required>
+        <label>رمز عبور</label>
+        <input name="password" type="password" value="1234" required>
+        <button type="submit">ورود</button>
+      </form>
+    </div>
+  </body>
+</html>
