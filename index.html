@@ -18,118 +18,56 @@ label { color:#bbb; font-size:14px;}
 
 <h1>🔑 HESAM License Manager</h1>
 
-<!-- Login -->
 <div class="box" id="loginBox">
-  <h3>ورود</h3>
+  <h3>Login</h3>
   <input id="username" placeholder="Username">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">Login</button>
 </div>
 
-<!-- Main -->
 <div class="box" id="mainBox" style="display:none;">
-  
-  <h3>📌 ساخت لایسنس جدید</h3>
-  <input id="newKey" placeholder="کلید لایسنس (اختیاری)">
-  <label>چند روز؟</label>
-  <input id="newDays" type="number" value="30">
-  <button onclick="createLicense()">ساخت لایسنس</button>
-
-  <h3>📌 تمدید لایسنس</h3>
-  <input id="extendKey" placeholder="کلید لایسنس">
-  <label>چند روز اضافه شود؟</label>
-  <input id="extendDays" type="number" value="30">
-  <button onclick="extendLicense()">تمدید لایسنس</button>
+  <h3>📌 ساخت/تمدید لایسنس</h3>
+  <input id="keyInput" placeholder="کلید لایسنس (اختیاری)">
+  <label>تعداد روز:</label>
+  <input id="daysInput" type="number" value="30">
+  <button onclick="submitLicense()">ارسال به GitHub</button>
 
   <pre id="result"></pre>
 </div>
 
 <script>
-// GitHub
-const TOKEN = "YOUR_GITHUB_TOKEN";   // توکن شما
-const USER  = "hesamku";
-const REPO  = "my-website";
-const FILE  = "keys.json";
-
-// Login
 function login(){
     if(document.getElementById("username").value==="1234" &&
        document.getElementById("password").value==="1234"){
         document.getElementById("loginBox").style.display="none";
         document.getElementById("mainBox").style.display="block";
-    } else alert("❌ اشتباهه");
+    } else alert("❌ یوزرنیم یا پسورد اشتباه است!");
 }
 
-// JSON local
-let keysJSON = { "keys": {} };
+function submitLicense(){
+    let key = document.getElementById("keyInput").value.trim();
+    if(!key) key = "HESAM-KU-VIP-"+Math.random().toString(36).substring(2,11).toUpperCase();
+    let days = parseInt(document.getElementById("daysInput").value) || 30;
 
-// ساخت کلید تصادفی
-function generateKey(){
-    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-    let key = "HESAM-KU-VIP-";
-    for(let i=0;i<9;i++) key += chars[Math.floor(Math.random()*chars.length)];
-    return key;
+    // داده‌ها برای Action ارسال می‌شود
+    const payload = { key: key, days: days };
+
+    fetch("https://api.github.com/repos/hesamku/my-website/dispatches", {
+        method:"POST",
+        headers:{
+            "Accept":"application/vnd.github.v3+json",
+            "Authorization":"token YOUR_PERSONAL_ACCESS_TOKEN"
+        },
+        body: JSON.stringify({
+            event_type:"update_license",
+            client_payload: payload
+        })
+    })
+    .then(res=>res.ok ? showResult("✅ درخواست ثبت شد") : showResult("❌ خطا"))
+    .catch(err=>showResult("❌ خطا: "+err));
 }
 
-// نمایش خروجی
 function showResult(msg){ document.getElementById("result").innerText = msg; }
-
-// ساخت لایسنس
-async function createLicense(){
-    let key = document.getElementById("newKey").value.trim() || generateKey();
-    let days = parseInt(document.getElementById("newDays").value);
-    
-    let expires = new Date();
-    expires.setDate(expires.getDate() + days);
-    let expStr = expires.toISOString().slice(0,10);
-    
-    keysJSON.keys[key] = { status:"active", expires:expStr };
-    showResult("✔ ساخته شد:\n" + JSON.stringify(keysJSON.keys[key], null, 2));
-    
-    await updateGitHub();
-}
-
-// تمدید لایسنس
-async function extendLicense(){
-    let key = document.getElementById("extendKey").value.trim();
-    let days = parseInt(document.getElementById("extendDays").value);
-
-    if(!keysJSON.keys[key]) return showResult("❌ پیدا نشد");
-
-    let expires = new Date();
-    expires.setDate(expires.getDate() + days);
-    let expStr = expires.toISOString().slice(0,10);
-
-    keysJSON.keys[key].expires = expStr;
-    showResult("✔ تمدید شد:\n" + JSON.stringify(keysJSON.keys[key], null, 2));
-
-    await updateGitHub();
-}
-
-// آپدیت GitHub
-async function updateGitHub(){
-    try{
-        const fileRes = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${FILE}`);
-        const file = await fileRes.json();
-
-        await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${FILE}`, {
-            method:"PUT",
-            headers:{
-                "Authorization":`token ${TOKEN}`,
-                "Content-Type":"application/json"
-            },
-            body: JSON.stringify({
-                message:"License update",
-                content: btoa(unescape(encodeURIComponent(JSON.stringify(keysJSON, null, 2)))),
-                sha: file.sha
-            })
-        });
-
-        showResult("✔ فایل keys.json آپدیت شد");
-    }catch(e){
-        showResult("❌ خطا:\n" + e);
-    }
-}
 </script>
 </body>
 </html>
