@@ -2,72 +2,100 @@
 <html lang="fa">
 <head>
 <meta charset="UTF-8">
-<title>HESAM License Manager</title>
+<title>HESAM License Generator</title>
 <style>
-body { font-family: Arial; background:#111; color:#fff; padding:20px; max-width:600px; margin:auto;}
+body { font-family: Arial; background:#111; color:#fff; padding:20px; max-width:700px; margin:auto;}
 h1 { text-align:center; color:#3e8af2; }
-.box { background:#222; padding:20px; border-radius:10px; margin-bottom:20px;}
-input { width:100%; padding:10px; margin-top:8px; border-radius:6px; border:none; outline:none;}
+.box { background:#222; padding:20px; border-radius:12px; margin-bottom:20px;}
+input, select { width:100%; padding:10px; margin-top:8px; border-radius:6px; border:none; outline:none;}
 button { width:100%; padding:12px; margin-top:10px; background:#3e8af2; border:none; border-radius:6px; color:#fff; font-size:16px; cursor:pointer;}
 button:hover { background:#1e5fcc;}
-pre { background:#000; padding:10px; border-radius:6px; overflow-x:auto;}
+pre { background:#000; padding:15px; border-radius:8px; overflow-x:auto; white-space: pre-wrap;}
 label { color:#bbb; font-size:14px;}
 </style>
 </head>
 <body>
 
-<h1>🔑 HESAM License Manager</h1>
+<h1>🔑 HESAM License Generator</h1>
 
 <div class="box" id="loginBox">
-  <h3>Login</h3>
+  <h3>ورود</h3>
   <input id="username" placeholder="Username">
   <input id="password" type="password" placeholder="Password">
   <button onclick="login()">Login</button>
 </div>
 
 <div class="box" id="mainBox" style="display:none;">
-  <h3>📌 ساخت/تمدید لایسنس</h3>
-  <input id="keyInput" placeholder="کلید لایسنس (اختیاری)">
-  <label>تعداد روز:</label>
-  <input id="daysInput" type="number" value="30">
-  <button onclick="submitLicense()">ارسال به GitHub</button>
+  <h3>انتخاب مدل لایسنس</h3>
+  <select id="licenseType">
+    <option value="HESAM-KU-VIP">HESAM-KU-VIP-XXXXXXXXXX XXX XXX</option>
+    <option value="HESAM-KU-FREE">HESAM-KU-FREE-XXXXXXXXXXXXXXXX</option>
+    <option value="HASAN-YT-VIP">HASAN-YT-VIP-XXXXXXXXXXXXX</option>
+    <option value="HASAN-YT-FREE">HASAN-YT-FREE-XXXXXXXXXXXXXXX</option>
+  </select>
 
+  <label>انتخاب تعداد روز:</label>
+  <select id="daySelect">
+    <option value="1">1 روز</option>
+    <option value="7">7 روز</option>
+    <option value="15">15 روز</option>
+    <option value="30">30 روز</option>
+    <option value="45">45 روز</option>
+    <option value="60">60 روز</option>
+  </select>
+
+  <button onclick="generateLicense()">ساخت لایسنس</button>
+
+  <h3>لایسنس‌ها:</h3>
   <pre id="result"></pre>
 </div>
 
 <script>
+// Login ساده
 function login(){
-    if(document.getElementById("username").value==="1234" &&
-       document.getElementById("password").value==="1234"){
+    let u = document.getElementById("username").value;
+    let p = document.getElementById("password").value;
+    if(u==="1234" && p==="1234"){
         document.getElementById("loginBox").style.display="none";
         document.getElementById("mainBox").style.display="block";
     } else alert("❌ یوزرنیم یا پسورد اشتباه است!");
 }
 
-function submitLicense(){
-    let key = document.getElementById("keyInput").value.trim();
-    if(!key) key = "HESAM-KU-VIP-"+Math.random().toString(36).substring(2,11).toUpperCase();
-    let days = parseInt(document.getElementById("daysInput").value) || 30;
+// JSON محلی
+let keysJSON = { "keys": {} };
 
-    // داده‌ها برای Action ارسال می‌شود
-    const payload = { key: key, days: days };
-
-    fetch("https://api.github.com/repos/hesamku/my-website/dispatches", {
-        method:"POST",
-        headers:{
-            "Accept":"application/vnd.github.v3+json",
-            "Authorization":"token YOUR_PERSONAL_ACCESS_TOKEN"
-        },
-        body: JSON.stringify({
-            event_type:"update_license",
-            client_payload: payload
-        })
-    })
-    .then(res=>res.ok ? showResult("✅ درخواست ثبت شد") : showResult("❌ خطا"))
-    .catch(err=>showResult("❌ خطا: "+err));
+// ساخت کلید تصادفی
+function randomStr(length){
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let str="";
+    for(let i=0;i<length;i++) str+=chars[Math.floor(Math.random()*chars.length)];
+    return str;
 }
 
-function showResult(msg){ document.getElementById("result").innerText = msg; }
+// ساخت لایسنس
+function generateLicense(){
+    let type = document.getElementById("licenseType").value;
+    let days = parseInt(document.getElementById("daySelect").value);
+
+    // تولید کلید مطابق مدل
+    let key="";
+    if(type.includes("VIP")){
+        key = type + "-" + randomStr(10) + " " + randomStr(3) + " " + randomStr(3);
+    } else {
+        key = type + "-" + randomStr(20);
+    }
+
+    // تاریخ انقضا
+    let expiry = new Date();
+    expiry.setDate(expiry.getDate()+days);
+    let expiryStr = expiry.toISOString().slice(0,10);
+
+    // اضافه کردن به JSON
+    keysJSON.keys[key] = { status:"active", expires: expiryStr };
+
+    // نمایش JSON
+    document.getElementById("result").innerText = JSON.stringify(keysJSON, null, 2);
+}
 </script>
 </body>
 </html>
