@@ -2,23 +2,22 @@
 <html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<title>License Generator</title>
+<title>License Maker</title>
 <style>
     body {
-        background: #0d0f17;
+        background: #0c0f16;
         color: #fff;
         font-family: sans-serif;
         display: flex;
-        flex-direction: column;
-        align-items: center;
-        padding: 40px;
+        justify-content: center;
+        padding-top: 40px;
     }
     .box {
-        background: #1a1d2d;
-        padding: 25px;
-        border-radius: 12px;
+        background: #171b28;
         width: 420px;
-        box-shadow: 0 0 25px #000;
+        padding: 25px;
+        border-radius: 15px;
+        box-shadow: 0 0 20px #000;
     }
     input, select, button {
         width: 100%;
@@ -29,18 +28,20 @@
         font-size: 16px;
     }
     button {
-        background: #4c6ef5;
+        background: #5566ff;
         color: white;
         cursor: pointer;
         transition: 0.2s;
     }
-    button:hover { background: #3b5bdb; }
+    button:hover { background: #4455dd; }
     #output {
-        background: #0b0d14;
+        background: #0c0f16;
         padding: 15px;
-        border-radius: 8px;
+        border-radius: 10px;
         margin-top: 15px;
         direction: ltr;
+        white-space: pre-wrap;
+        font-size: 15px;
     }
 </style>
 </head>
@@ -48,7 +49,8 @@
 
 <div class="box" id="loginBox">
     <h2>ورود</h2>
-    <input id="pass" type="password" placeholder="رمز: 1234">
+    <input id="user" type="text" placeholder="یوزرنیم: 1234">
+    <input id="pass" type="password" placeholder="پسورد: 1234">
     <button onclick="login()">ورود</button>
 </div>
 
@@ -63,7 +65,7 @@
         <option>HASAN-YT-FRE</option>
     </select>
 
-    <label>طول کد (X):</label>
+    <label>تعداد X:</label>
     <input id="len" type="number" value="12">
 
     <label>روز اعتبار:</label>
@@ -76,24 +78,26 @@
         <option>60</option>
     </select>
 
-    <button onclick="generate()">ساخت JSON</button>
+    <button onclick="generate()">ساخت خروجی</button>
 
     <pre id="output"></pre>
+
     <button onclick="copyText()">کپی</button>
 </div>
 
 <script>
-// --- Login ---
+// LOGIN
 function login() {
-    if (document.getElementById("pass").value === "1234") {
+    if (document.getElementById("user").value === "1234" &&
+        document.getElementById("pass").value === "1234") {
         document.getElementById("loginBox").style.display = "none";
         document.getElementById("genBox").style.display = "block";
     } else {
-        alert("رمز اشتباه است");
+        alert("یوزر یا پسورد غلط است");
     }
 }
 
-// --- Random Code ---
+// RANDOM CODE
 function randomString(length) {
     let chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
     let res = "";
@@ -103,11 +107,36 @@ function randomString(length) {
     return res;
 }
 
-// --- Add Days ---
+// DATE MAKER
 function addDays(days) {
     let d = new Date();
     d.setDate(d.getDate() + Number(days));
-    return d.toISOString().substring(0, 10);
+    return d.toISOString().slice(0, 10);
+}
+
+// GENERATE JSON
+function generate() {
+    let type = document.getElementById("licenseType").value;
+    let len = Number(document.getElementById("len").value);
+    let days = Number(document.getElementById("days").value);
+
+    let code = type + "-" + randomString(len);
+    let exp = addDays(days);
+
+    let json = `},\n    "${code}": {\n      "expires": "${exp}",\n      "status": "active"`;    
+
+    document.getElementById("output").innerText = json;
+}
+
+// COPY
+function copyText() {
+    navigator.clipboard.writeText(document.getElementById("output").innerText);
+    alert("کپی شد!");
+}
+</script>
+
+</body>
+</html>    return d.toISOString().substring(0, 10);
 }
 
 // --- Generate JSON ---
