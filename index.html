@@ -8,13 +8,18 @@
         background: #0c0f16;
         color: #fff;
         font-family: sans-serif;
+        min-height: 100vh;
+        margin: 0;
+
+        /* مرکز کامل */
         display: flex;
         justify-content: center;
-        padding-top: 40px;
+        align-items: center;
     }
     .box {
         background: #171b28;
-        width: 420px;
+        width: 90%;
+        max-width: 420px;
         padding: 25px;
         border-radius: 15px;
         box-shadow: 0 0 20px #000;
@@ -26,6 +31,7 @@
         border-radius: 8px;
         border: none;
         font-size: 16px;
+        box-sizing: border-box;
     }
     button {
         background: #5566ff;
@@ -123,42 +129,12 @@ function generate() {
     let code = type + "-" + randomString(len);
     let exp = addDays(days);
 
-    let json = `},\n    "${code}": {\n      "expires": "${exp}",\n      "status": "active"`;    
+    let json = `},\n    "${code}": {\n      "expires": "${exp}",\n      "status": "active"`;
 
     document.getElementById("output").innerText = json;
 }
 
 // COPY
-function copyText() {
-    navigator.clipboard.writeText(document.getElementById("output").innerText);
-    alert("کپی شد!");
-}
-</script>
-
-</body>
-</html>    return d.toISOString().substring(0, 10);
-}
-
-// --- Generate JSON ---
-function generate() {
-    let type = document.getElementById("licenseType").value;
-    let len = Number(document.getElementById("len").value);
-    let days = document.getElementById("days").value;
-
-    let code = type + "-" + randomString(len);
-    let exp = addDays(days);
-
-    let json = `
-"${code}": {
-  "expires": "${exp}",
-  "status": "active"
-}
-`;
-
-    document.getElementById("output").innerText = json;
-}
-
-// --- Copy ---
 function copyText() {
     navigator.clipboard.writeText(document.getElementById("output").innerText);
     alert("کپی شد!");
