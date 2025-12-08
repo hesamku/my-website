@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+<meta charset="UTF-8">
+<title>HESAM License Manager</title>
+<style>
+body { font-family: Arial; background:#111; color:#fff; padding:20px; max-width:600px; margin:auto;}
+h1 { text-align:center; color:#3e8af2; }
+.box { background:#222; padding:20px; border-radius:10px; margin-bottom:20px;}
+input { width:100%; padding:10px; margin-top:8px; border-radius:6px; border:none; outline:none;}
+button { width:100%; padding:12px; margin-top:10px; background:#3e8af2; border:none; border-radius:6px; color:#fff; font-size:16px; cursor:pointer;}
+button:hover { background:#1e5fcc;}
+pre { background:#000; padding:10px; border-radius:6px; overflow-x:auto;}
+label { color:#bbb; font-size:14px;}
+</style>
+</head>
+<body>
+
+<h1>🔑 HESAM License Manager</h1>
+
+<!-- Login -->
+<div class="box" id="loginBox">
+  <h3>ورود</h3>
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+</div>
+
+<!-- Main -->
+<div class="box" id="mainBox" style="display:none;">
+  
+  <h3>📌 ساخت لایسنس جدید</h3>
+  <input id="newKey" placeholder="کلید لایسنس (اختیاری)">
+  <label>چند روز؟</label>
+  <input id="newDays" type="number" value="30">
+  <button onclick="createLicense()">ساخت لایسنس</button>
+
+  <h3>📌 تمدید لایسنس</h3>
+  <input id="extendKey" placeholder="کلید لایسنس">
+  <label>چند روز اضافه شود؟</label>
+  <input id="extendDays" type="number" value="30">
+  <button onclick="extendLicense()">تمدید لایسنس</button>
+
+  <pre id="result"></pre>
+</div>
+
+<script>
+// GitHub
+const TOKEN = "YOUR_GITHUB_TOKEN";   // توکن شما
+const USER  = "hesamku";
+const REPO  = "my-website";
+const FILE  = "keys.json";
+
+// Login
+function login(){
+    if(document.getElementById("username").value==="1234" &&
+       document.getElementById("password").value==="1234"){
+        document.getElementById("loginBox").style.display="none";
+        document.getElementById("mainBox").style.display="block";
+    } else alert("❌ اشتباهه");
+}
+
+// JSON local
+let keysJSON = { "keys": {} };
+
+// ساخت کلید تصادفی
+function generateKey(){
+    const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    let key = "HESAM-KU-VIP-";
+    for(let i=0;i<9;i++) key += chars[Math.floor(Math.random()*chars.length)];
+    return key;
+}
+
+// نمایش خروجی
+function showResult(msg){ document.getElementById("result").innerText = msg; }
+
+// ساخت لایسنس
+async function createLicense(){
+    let key = document.getElementById("newKey").value.trim() || generateKey();
+    let days = parseInt(document.getElementById("newDays").value);
+    
+    let expires = new Date();
+    expires.setDate(expires.getDate() + days);
+    let expStr = expires.toISOString().slice(0,10);
+    
+    keysJSON.keys[key] = { status:"active", expires:expStr };
+    showResult("✔ ساخته شد:\n" + JSON.stringify(keysJSON.keys[key], null, 2));
+    
+    await updateGitHub();
+}
+
+// تمدید لایسنس
+async function extendLicense(){
+    let key = document.getElementById("extendKey").value.trim();
+    let days = parseInt(document.getElementById("extendDays").value);
+
+    if(!keysJSON.keys[key]) return showResult("❌ پیدا نشد");
+
+    let expires = new Date();
+    expires.setDate(expires.getDate() + days);
+    let expStr = expires.toISOString().slice(0,10);
+
+    keysJSON.keys[key].expires = expStr;
+    showResult("✔ تمدید شد:\n" + JSON.stringify(keysJSON.keys[key], null, 2));
+
+    await updateGitHub();
+}
+
+// آپدیت GitHub
+async function updateGitHub(){
+    try{
+        const fileRes = await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${FILE}`);
+        const file = await fileRes.json();
+
+        await fetch(`https://api.github.com/repos/${USER}/${REPO}/contents/${FILE}`, {
+            method:"PUT",
+            headers:{
+                "Authorization":`token ${TOKEN}`,
+                "Content-Type":"application/json"
+            },
+            body: JSON.stringify({
+                message:"License update",
+                content: btoa(unescape(encodeURIComponent(JSON.stringify(keysJSON, null, 2)))),
+                sha: file.sha
+            })
+        });
+
+        showResult("✔ فایل keys.json آپدیت شد");
+    }catch(e){
+        showResult("❌ خطا:\n" + e);
+    }
+}
+</script>
+</body>
+</html>
